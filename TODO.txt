@@ -1,0 +1,19 @@
+TODO
+    1. Make a 4x4 int array
+TODO
+    2. Make methood setBoard that will receive a 2-D array as a
+       parameter and return nothing. This method will randomly place pairs of numbers
+       from 1 to 8 in the array.
+TODO
+    3. You need to define a method called “prettyPrint” that will receive a 2-D array as a
+       parameter and return nothing.
+       After setting up the board, the game will ask the user for a pair of coordinates
+       (row/column). The program will display a message accordingly if a pair has been
+       found.
+TODO
+    5. Checkers:
+           a. The program MUST validate that a row/column is valid
+            b. The program MUST validate that the pair of coordinates are not the same
+                and that they have not been previously discovered
+TODO
+    6. The game will end when the user discovers all pairs

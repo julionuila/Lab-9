@@ -1,0 +1,176 @@
+OBJECT CLASS Cord
+    DECLARE PRIVATE INT rowNum 
+    DECLARE PRIVATE INT columnNum
+
+    PUBLIC CONSTRUCTOR Cord(int rowNum, int columnNum)
+        THIS.rowNum = rowNum
+        THIS.columnNum = columnNum
+    END CONSTRUCTOR
+
+    PUBLIC CONSTRUCTOR Cord(String cordString)
+        THIS.rowNum = Integer.parseInt(cordString.substring(0,cordString.indexOf(','))
+        THIS.columnNum = this.columnNum = Integer.parseInt(cordString.substring(cordString.indexOf(',')+1)
+    END CONSTRUCTOR
+
+    DECLARE OBJECT GETTER FUNCTION FOR OBJECT VALUE rowNum
+
+    DECLARE OBJECT SETTER FUNCTION FOR OBJECT VALUE rowNum
+    
+    DECLARE OBJECT GETTER FUNCTION FOR OBJECT VALUE columnNum
+
+    DECLARE OBJECT SETTER FUNCTION FOR OBJECT VALUE columnNum
+END OBJECT CLASS
+
+
+DECLARE GLOBLE STATIC INT random
+DECLARE GLOBLE STATIC OBJECT Cord cordOne
+DECLARE GLOBLE STATIC OBJECT Cord cordTwo
+DECLARE GLOBLE STATIC ARRAYLIST<Cord> listOfCordsFound
+
+
+FUNCTION STATIC VOID setBoard(int[][] gameBoard)
+    FOR(INT rowNum = 0; rowNum < gameBoard.length; rowNum++)
+        FOR(INT columnNum = 0; columnNum < gameBoard.length; columnNum++)
+            genarateNum(gameBoard)
+            gameBoard[rowNum][columnNum] = random
+        END FOR
+    END FOR
+END FUNCTION
+
+FUNCTION STATIC void prettyPrint(int[][] gameBoard)
+    FOR(INT r = 0; r < gameBoard.length; r++)
+        FOR(INT c = 0; c < gameBoard.length; c++)
+            IF c+1 < gameBoard[r].length
+                OUTPUT(gameBoard[r][c]+" ")
+            ELSE
+                OUTPUT(gameBoard[r][c]+"\n")
+            END IF
+        END FOR
+    END FOR
+END FUNCTION
+
+FUNCTION STATIC VOID genarateNum(int[][] gameBoard)
+    random = 1 + (int)(Math.random()*8)
+    IF !checkNumberOfApperanses(gameBoard,random)
+        genarateNum(gameBoard)
+    END IF
+END FUNCTION
+
+FUNCTION STATIC BOOLEAN checkNumberOfApperanses(int[][] gameBoard, int randomNum)
+    INT randomNumApperanceCount = 0
+    FOR(INT r = 0; r < gameBoard.length; r++)
+        FOR(INT c = 0; c < gameBoard.length; c++)
+            IF gameBoard[r][c] == randomNum
+                randomNumApperanceCount++
+            END IF
+        END FOR
+    END FOR 
+    IF randomNumApperanceCount >= 2
+        return false
+    END IF
+    return true
+EMD FUNCTION
+
+FUNCTION STATIC VOID userInteraction(int[][] gameBoard)
+    askForCoordinateOne()
+    askForCoordinateTwo()
+
+    IF areUserSelectedCordAreAPair(gameBoard)
+        IF checkIfPairAlreadyFound()
+            OUTPUT("The Pair selected was already found try again\n")
+            userInteraction(gameBoard)
+        ELSE
+            listOfCordsFound.add(cordOne)
+            listOfCordsFound.add(cordTwo)
+            OUTPUT("Good job pair found\n")
+            IF listOfCordsFound.size() == 4*4
+                OUTPUT("All Pairs found Good Job\nGame Over")
+                EXIT PROGRAM
+            END IF 
+            userInteraction(gameBoard)
+        END IF
+    ELSE
+        OUTPUT("Selected coordinates are not a pair. Try again\n")
+        userInteraction(gameBoard)
+    END IF
+END FUNCTION
+
+FUNCTION STATIC VOID askForCoordinateOne()
+    STRING input = INPUT("Enter your first coordinate (<row>,<column>)")
+    IF Pattern.matches("[1-8],[1-8]",input)
+        cordOne = new Cord(input)
+    ELSE
+        OUTPUT("Incorrect format or row\\column number is invalid try again.\n")
+         askForCoordinateOne()
+    END IF
+END FUNCTION
+
+FUNCTION STATIC VOID askForCoordinateTwo()
+    STRING input = INPUT("Enter your Second coordinate (<row>,<column>)")
+    IF Pattern.matches("[1-8],[1-8]",input)
+        cordTwo = new Cord(input)
+        IF areUserSelectedCordsTheSame()
+            OUTPUT("Your First Coordinate and your Second Coordinate are the same. Try again\n")
+            askForCoordinateTwo()
+        END IF
+    ELSE
+        OUTPUT("Incorrect format or row\\column number is invalid try again.\n")
+        askForCoordinateTwo()
+    END IF
+END FUNCTION
+
+FUNCTION STATIC BOOLEAN areUserSelectedCordAreAPair(int[][] gameBoard)
+    IF gameBoard[cordOne.getRowNum()-1][cordOne.getColumnNum()-1] == gameBoard[cordTwo.getRowNum()-1][cordTwo.getColumnNum()-1]
+        RETURN true
+    END IF
+    RETURN false
+END FUNCTION
+
+FUNCTION STATIC BOOLEAN areUserSelectedCordsTheSame()
+    IF (cordOne.getRowNum() == cordTwo.getRowNum()) AND (cordOne.getColumnNum() == cordTwo.getColumnNum())
+        RETURN true
+    END IF
+    RETURN false
+END FUNCTION
+
+FUNCTION STATIC BOOLEAN checkIfPairAlreadyFound()
+    BOOLEAN hasCordOne = false
+    BOOLEAN hasCordTwo = false
+    FOR EACH Cord X in listOfCordsFound
+        IF (cordOne.getRowNum()== x.getRowNum()) AND (cordOne.getColumnNum()==x.getColumnNum())
+            hasCordOne = true
+        END IF
+        IF (cordTwo.getRowNum()== x.getRowNum()) AND (cordTwo.getColumnNum()==x.getColumnNum())
+            hasCordTwo = true
+        END IF
+        IF (hasCordOne==true) AND (hasCordTwo==true)
+            RETURN true
+        END IF 
+    END FOR EACH
+    RETURN false
+END FUNCTION
+
+FUNCTION STATIC VOID main(String[] args)
+    DECLARE INT[][] gameBoard = INT[4][4]
+    setBoard(gameBoard)
+    prettyPrint(gameBoard)
+    userInteraction(gameBoard)
+END FUNCTION
+
+
+***** TRACE FOR ONE TEST CASE *****
+4 1 7 3
+3 5 6 5
+6 8 7 2
+1 2 4 8
+
+Enter your first coordinate (<row>,<column>)
+1,2                                             
+//Moved on to askForCoordinateTwo because it passes the regex condition
+Enter your Second coordinate (<row>,<column>)
+4,1
+// Because 1,2 and 4,1 are not the same coordinate, are eqaul to the same value and are not in the listOfCordsFound array. The globle vars cordOne and cordTwo are added to the listOfCordsFound array.
+1 == 1
+Good job pair found.
+// Checks to see if all pairs we found in this case on one of the pairs have been found so the program passes execution to the userInteraction function. This will happen until the size of the listOfCordsFound is eqaul to 4*4 or the number of elements in the gameBoard 2d array.
+ Enter your first coordinate (<row>,<column>)
